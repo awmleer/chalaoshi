@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 from django.conf import settings
 
+from .tools import convert2PY
 from . import cache
 
 COMMENT_STATUS = (
@@ -50,8 +51,6 @@ class College(models.Model):
         #cache.delCache(key)
         if cache.getCache(key):
             return cache.getCache(key)
-
-        from tools import convert2PY # TODO missing tools package
         colleges = list(College.objects.all().filter(display=True).order_by('name'))
         for college in colleges:
             college.pinyin = convert2PY(college.name[:1])
@@ -72,7 +71,6 @@ class Teacher(models.Model):
     pinyin = models.CharField(max_length=100)
 
     def save(self, *args, **kwargs):
-        from tools import convert2PY
         if not self.pinyin or len(self.pinyin) == 0:
             self.pinyin = convert2PY(self.name)
         # delete cache
@@ -187,28 +185,32 @@ class Teacher(models.Model):
                 teachers = random.sample(teachers_top,n/3)
                 teachers += random.sample(teachers_middle,n/3)
                 teachers += random.sample(teachers_bottom,n - n/3*2)
-
-            return sorted(teachers,lambda x,y:cmp(x.rate, y.rate) * (-1 if desc else 1))
+            def compare(x,y):
+                if x==y:
+                    return 0
+                if desc:
+                    return x.rate<y.rate
+                else:
+                    return x.rate>y.rate
+            return sorted(teachers,key=compare)
 
 
     @staticmethod
-    def search(kw):
+    def search(keyword):
         teachers = []
-        if kw == '':
+        if keyword == '':
             teachers = Teacher.objects.all()
-        elif isinstance(kw, list):
+        elif isinstance(keyword, list):
             q = Q(pk=-1)
-            for w in kw:
+            for w in keyword:
                 q = Q(name=w) | q
             teachers = Teacher.objects.all().filter(q)
             teachers = teachers.order_by('-hot')[:40]
         else:
-            if not isinstance(kw, unicode):
-                kw = kw.decode('utf-8')
-            teachers = Teacher.objects.all().filter(Q(name__contains=kw) | Q(pinyin__startswith=kw))
+            teachers = Teacher.objects.all().filter(Q(name__contains=keyword) | Q(pinyin__startswith=keyword))
             teachers = teachers.order_by('-hot')[:20]
 
-        key = 'search_teacher_%s' % (kw.encode('utf-8') if isinstance(kw, unicode) else kw)
+        # key = 'search_teacher_%s' % keyword
 
         #if cache.getCache(key):
         #    return cache.getCache(key)
@@ -467,13 +469,13 @@ class LogOnSearch(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
 
     uuid = models.BigIntegerField()
-    kw = models.CharField(max_length=50)
+    keyword = models.CharField(max_length=50)
 
     @staticmethod
     def add_log(keyword,uuid):
         log = LogOnSearch()
         log.uuid = uuid
-        log.kw = keyword
+        log.keyword = keyword
         log.save()
 
 class LogOnTeacher(models.Model):
