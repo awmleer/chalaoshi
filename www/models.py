@@ -1,11 +1,10 @@
-
 import json
 
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
 
-from .cache import *
+from . import cache
 
 COMMENT_STATUS = (
     (0, '未审核'),
@@ -33,11 +32,11 @@ class College(models.Model):
     def __getattribute__(self, item):
         def get_school():
             key = 'school_%s' % self.school_id
-            school = getCache(key)
+            school = cache.getCache(key)
             if school:
                 return school
             school = models.Model.__getattribute__(self,'school')
-            setCache(key, school)
+            cache.setCache(key, school)
             return school
 
         if item == 'school':
@@ -48,17 +47,17 @@ class College(models.Model):
     @staticmethod
     def getAll():
         key = 'college_list'
-        #delCache(key)
-        if getCache(key):
-            return getCache(key)
+        #cache.delCache(key)
+        if cache.getCache(key):
+            return cache.getCache(key)
 
-        from tools import convert2PY
+        from tools import convert2PY # TODO missing tools package
         colleges = list(College.objects.all().filter(display=True).order_by('name'))
         for college in colleges:
             college.pinyin = convert2PY(college.name[:1])
             college.name = college.name
         colleges = sorted(colleges, key=lambda college: college.pinyin)
-        setCache(key,colleges)
+        cache.setCache(key,colleges)
 
         return colleges
 
@@ -78,32 +77,32 @@ class Teacher(models.Model):
             self.pinyin = convert2PY(self.name)
         # delete cache
         rate_distribution_key = 'rate_distribution'
-        delCache(rate_distribution_key)
+        cache.delCache(rate_distribution_key)
         
         teacher_rate_key = 'rate_%s' % self.id
-        delCache(teacher_rate_key)
+        cache.delCache(teacher_rate_key)
 
         super(Teacher, self).save(*args, **kwargs)
 
     def __getattribute__(self, item):
         def get_college():
             key = 'college_%s' % self.college_id
-            college = getCache(key)
+            college = cache.getCache(key)
             if college:
                 return college
             college = models.Model.__getattribute__(self, 'college')
-            setCache(key, college)
+            cache.setCache(key, college)
             return college
         
         def get_gpa():
             gpa_key = 'teacher_%d_gpa' % self.pk
-            cache_data = getCache(gpa_key)
+            cache_data = cache.getCache(gpa_key)
             if not cache_data:
                 import urllib
                 import urllib2
                 url = 'http://zjustudy.chalaoshi.cn/course/list?'+urllib.urlencode({'teacher':self.name.encode('UTF-8')})
                 data = urllib2.urlopen(url).read()
-                setCache(gpa_key, data, 3600*24)
+                cache.setCache(gpa_key, data, 3600*24)
                 return data
             else:
                 return cache_data    
@@ -123,11 +122,11 @@ class Teacher(models.Model):
         teachers = Teacher.objects.all()
         key = 'hot_teacher_%s' % str(cid)
 
-        cached_teachers = getCache(key)
+        cached_teachers = cache.getCache(key)
         if int(cid) >= 0:
             if not cached_teachers:
                 teachers = list(teachers.filter(college=cid).order_by('-hot')[:30])
-                setCache(key,teachers,3600*4)
+                cache.setCache(key,teachers,3600*4)
             else:
                 teachers = cached_teachers
             return teachers[:n]
@@ -136,7 +135,7 @@ class Teacher(models.Model):
         else:
             if not cached_teachers:
                 teachers = list(teachers.order_by('-hot')[:30])
-                setCache(key,teachers,3600*4)
+                cache.setCache(key,teachers,3600*4)
             else:
                 teachers = cached_teachers
 
@@ -157,7 +156,7 @@ class Teacher(models.Model):
         teachers = Teacher.objects.all().filter(rate__gt=0)
        
         key =  ('high_rate_teacher_%s' % cid) if desc else  ('low_rate_teacher_%s' % cid)
-        cached_teachers = getCache(key)
+        cached_teachers = cache.getCache(key)
         
         if int(cid) >= 0:
             if not cached_teachers:
@@ -165,7 +164,7 @@ class Teacher(models.Model):
                     teachers = list(teachers.filter(college=cid).order_by('-rate')[:30])
                 else:
                     teachers = list(teachers.filter(college=cid).order_by('rate')[:30])
-                setCache(key,teachers,3600*4)
+                cache.setCache(key,teachers,3600*4)
             else:
                 teachers = cached_teachers
             return teachers[:n]
@@ -176,7 +175,7 @@ class Teacher(models.Model):
                     teachers = list(teachers.order_by('-rate')[:30])
                 else:    
                     teachers = list(teachers.order_by('rate')[:30])
-                setCache(key,teachers,3600*4)
+                cache.setCache(key,teachers,3600*4)
             else:
                 teachers = cached_teachers
 
@@ -211,17 +210,17 @@ class Teacher(models.Model):
 
         key = 'search_teacher_%s' % (kw.encode('utf-8') if isinstance(kw, unicode) else kw)
 
-        #if getCache(key):
-        #    return getCache(key)
+        #if cache.getCache(key):
+        #    return cache.getCache(key)
         #else:
         teachers = list(teachers)
-        #    setCache(key,teachers,60*60*24)
+        #    cache.setCache(key,teachers,60*60*24)
         return teachers
     
     @staticmethod
     def get_teacher_rate_distribution():
         rate_distribution_key = 'rate_distribution'
-        result = getCache(rate_distribution_key)
+        result = cache.getCache(rate_distribution_key)
 
         if result is not None:
             return result
@@ -233,7 +232,7 @@ class Teacher(models.Model):
             distribution.setdefault(index,0)
             distribution[index] += 1
         
-        setCache(rate_distribution_key, distribution)
+        cache.setCache(rate_distribution_key, distribution)
         return distribution
 
     def __unicode__(self):
@@ -258,16 +257,16 @@ class Comment(models.Model):
 
         # del cache
         key = str('comment_%s' % self.teacher.id)
-        delCache(key)
+        cache.delCache(key)
 
     def __getattribute__(self, item):
         def get_teacher():
             key = 'teacher_%s' % self.teacher_id
-            teacher = getCache(key)
+            teacher = cache.getCache(key)
             if teacher:
                 return teacher
             teacher = models.Model.__getattribute__(self, 'teacher')
-            setCache(key, teacher)
+            cache.setCache(key, teacher)
             return teacher
 
         if item == 'teacher':
@@ -296,12 +295,12 @@ class Comment(models.Model):
         if isinstance(teacher, Teacher):
             # get cache first
             key = str('comment_%s' % teacher.id)
-            comments = getCache(key)
+            comments = cache.getCache(key)
             if comments is not None:
                 return comments
             # cache missed
             comments = list(Comment.objects.all().filter(teacher=teacher,status__gte=0))
-            setCache(key,comments)
+            cache.setCache(key,comments)
             return comments
 
 
@@ -325,19 +324,19 @@ class RateOnComment(models.Model):
 
         # del cache
         roc_key = 'rate_on_comment_%s' % self.comment.id
-        delCache(roc_key)
+        cache.delCache(roc_key)
 
         # add cache
         roc_uuid_key = 'rate_on_comment_uuid_%s' % self.uuid
         rates = RateOnComment.objects.all().filter(uuid=self.uuid)
-        setCache(roc_uuid_key, rates)
+        cache.setCache(roc_uuid_key, rates)
 
     @staticmethod
     def get_rate(comment):
         if isinstance(comment, Comment):
             key = 'rate_on_comment_%s' % comment.id
             # get cache first
-            s = getCache(key)
+            s = cache.getCache(key)
             if s is not None:
                 return s
 
@@ -346,7 +345,7 @@ class RateOnComment(models.Model):
             s = 0
             for rate in rates:
                 s += rate.rate
-            setCache(key, s)
+            cache.setCache(key, s)
             return s
 
     @staticmethod
@@ -365,7 +364,7 @@ class RateOnComment(models.Model):
     @staticmethod
     def get_comment_pks(uuid):
         key = 'rate_on_comment_uuid_%s' % uuid
-        rates = getCache(key)
+        rates = cache.getCache(key)
         if rates is None:
             rates = []
 
@@ -397,21 +396,21 @@ class Rate(models.Model):
 
         # Del cache
         rate_key = 'rate_%s' % self.teacher.id
-        delCache(rate_key)
+        cache.delCache(rate_key)
 
         is_rate_key = 'is_rate_%s_%s' % (self.teacher_id, self.uuid)
-        delCache(is_rate_key)
+        cache.delCache(is_rate_key)
 
     @staticmethod
     def is_rated(teacher, uuid):
         key = 'is_rate_%s_%s' % (teacher.id, uuid)
-        rated = getCache(key)
+        rated = cache.getCache(key)
         if rated is not None:
             return rated
 
         # Cache missed
         rated = Rate.objects.all().filter(teacher=teacher,uuid=uuid).exists()
-        setCache(key, rated)
+        cache.setCache(key, rated)
         return rated
 
     @staticmethod
@@ -419,7 +418,7 @@ class Rate(models.Model):
         if isinstance(teacher, Teacher):
             key = 'rate_%s' % teacher.id
             # get cache first
-            result = getCache(key)
+            result = cache.getCache(key)
             if result is not None:
                 return result
 
@@ -434,7 +433,7 @@ class Rate(models.Model):
             check_in = sum(check_in_list)
 
             result = (count, rate, check_in)
-            setCache(key, result)
+            cache.setCache(key, result)
             return result
         else:
             assert False
@@ -457,7 +456,7 @@ class Rate(models.Model):
 
                 #del cache
                 key = 'rate_%s' % teacher.id
-                delCache(key)
+                cache.delCache(key)
                 return rate
     
     def __unicode__(self):
