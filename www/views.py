@@ -165,7 +165,7 @@ def search(request):
     if len(query) > 1:
         teachers = Teacher.search(query)
     else:
-        keyword = request.GET.get('q','').replace(' ','').replace('\'','').replace(u'\u2006','')
+        keyword = request.GET.get('q','').replace(' ','').replace('\'','').replace('\u2006','')
         teachers = Teacher.search(keyword.encode('utf-8'))
 
     for teacher in teachers:
@@ -210,12 +210,12 @@ def teacher_detail(request, tid):
     college= teacher.college
 
     # wechat share
-    desc = u'%s老师尚未收到足够评分,快来评价吧吧!' %teacher.name
-    title = u'快来评价%s老师吧! - 查老师' % teacher.name
+    desc = '%s老师尚未收到足够评分,快来评价吧吧!' %teacher.name
+    title = '快来评价%s老师吧! - 查老师' % teacher.name
 
     if count > MIN_COUNT:
-        desc = u'%d人评价 %s分 有%s%%的人认为老师点名 ' % (count, rate, check_in)
-        title = u'听%s老师(%s分)的课是怎样的一种体验 - 查老师' % (teacher.name, rate)
+        desc = '%d人评价 %s分 有%s%%的人认为老师点名 ' % (count, rate, check_in)
+        title = '听%s老师(%s分)的课是怎样的一种体验 - 查老师' % (teacher.name, rate)
         comments = Comment.get_comments(teacher)
         if comments:
             desc += comments[0].content
