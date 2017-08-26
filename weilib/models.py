@@ -30,7 +30,7 @@ class DBTextMsg(models.Model):
                             help_text=u"可以为空，仅用来标识消息")
     content = models.TextField(blank=False, verbose_name=u"消息内容")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.name)
 
 
@@ -48,7 +48,7 @@ class DBImgTextMsg(models.Model):
     pic_url = models.URLField(blank=False, verbose_name=u"图片地址")
     url = models.URLField(blank=False, max_length=255, verbose_name=u"文章地址")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.name)
 
 
@@ -72,7 +72,7 @@ class PatternE2T(models.Model):
                                  help_text=u'<strong>对于自定义菜单事件和自定义链接跳转事件这个是必填的！</strong>')
     handler = models.ForeignKey(DBTextMsg, verbose_name=u"回复消息")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.name)
 
 
@@ -97,7 +97,7 @@ class PatternE2PT(models.Model):
     handler = models.ManyToManyField(
         DBImgTextMsg, verbose_name=u"回复消息", help_text=u"最多允许五条，不然会出错")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.name)
 
 
@@ -118,7 +118,7 @@ class PatternT2PT(models.Model):
     handler = models.ManyToManyField(
         DBImgTextMsg, verbose_name=u"回复消息", help_text=u"最多允许五条，不然会出错")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.name)
 
 
@@ -138,7 +138,7 @@ class PatternT2T(models.Model):
                                help_text=u"使用正则表达式")
     handler = models.ForeignKey(DBTextMsg, verbose_name=u"响应的消息内容")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.name)
 
 
@@ -162,7 +162,7 @@ class MsgLog(models.Model):
     event_key = models.CharField(max_length=50,default='')
     ticket = models.CharField(max_length=50,default='')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.id, self.to_user)
 
 
@@ -175,7 +175,7 @@ class WeixinGroup(models.Model):
     group_id = models.BigIntegerField()
     create_date = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s %s' % (self.group_id, self.name)
 
 
@@ -188,6 +188,6 @@ class WeixinUser(models.Model):
     openid = models.CharField(max_length=40, unique=True, verbose_name=u'OpenID')
     group = models.ForeignKey(WeixinGroup)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (self.id, self.openid)
 

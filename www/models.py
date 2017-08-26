@@ -21,7 +21,7 @@ MIN_RATE_COUNT = 5
 class School(models.Model):
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class College(models.Model):
@@ -29,7 +29,7 @@ class College(models.Model):
     school = models.ForeignKey(School)
     display = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __getattribute__(self, item):
@@ -230,7 +230,7 @@ class Teacher(models.Model):
         cache.setCache(rate_distribution_key, distribution)
         return distribution
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -299,7 +299,7 @@ class Comment(models.Model):
             return comments
 
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s %d' % (self.teacher.name,self.uuid)
 
 
@@ -454,7 +454,7 @@ class Rate(models.Model):
                 cache.delCache(key)
                 return rate
     
-    def __unicode__(self):
+    def __str__(self):
         return '%s %d' % (self.teacher.name,self.uuid)
 
 
