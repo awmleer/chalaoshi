@@ -53,7 +53,7 @@ class RateAdmin(admin.ModelAdmin):
 
 
 class LogOnSearchAdmin(admin.ModelAdmin):
-    list_display = ('create_time','kw','uuid')
+    list_display = ('create_time','keyword','uuid')
 
 
 class LogOnTeacherAdmin(admin.ModelAdmin):

@@ -1,4 +1,6 @@
 import json
+from operator import attrgetter
+import urllib.request, urllib.parse
 
 from django.db import models
 from django.db.models import Q
@@ -96,10 +98,8 @@ class Teacher(models.Model):
             gpa_key = 'teacher_%d_gpa' % self.pk
             cache_data = cache.getCache(gpa_key)
             if not cache_data:
-                import urllib
-                import urllib2
-                url = 'http://zjustudy.chalaoshi.cn/course/list?'+urllib.urlencode({'teacher':self.name.encode('UTF-8')})
-                data = urllib2.urlopen(url).read()
+                url = 'http://zjustudy.chalaoshi.cn/course/list?'+urllib.parse.urlencode({'teacher':self.name.encode('UTF-8')})
+                data = urllib.request.urlopen(url).read()
                 cache.setCache(gpa_key, data, 3600*24)
                 return data
             else:
@@ -185,14 +185,7 @@ class Teacher(models.Model):
                 teachers = random.sample(teachers_top,n/3)
                 teachers += random.sample(teachers_middle,n/3)
                 teachers += random.sample(teachers_bottom,n - n/3*2)
-            def compare(x,y):
-                if x==y:
-                    return 0
-                if desc:
-                    return x.rate<y.rate
-                else:
-                    return x.rate>y.rate
-            return sorted(teachers,key=compare)
+            return sorted(teachers,key=attrgetter('rate'),reverse=desc)
 
 
     @staticmethod

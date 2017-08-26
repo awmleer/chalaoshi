@@ -7,7 +7,7 @@ def convert2PY(string):
        如果输入数字字符串，或者输入英文字母，则返回其本身(英文字母如果为大写，转化为小写)
     """
     path = os.path.join(BASE_DIR, 'pinyin.txt')
-    f = open(path)
+    f = open(path,encoding='utf-8')
     lines = f.readlines()
 
 
@@ -18,7 +18,7 @@ def convert2PY(string):
         if (intord >= 65 and intord <=90 ) or (intord >= 97 and intord <=122):
             return ch[0:1].lower()
         for line in lines:
-            line = line.decode('utf-8')
+            # line = line.decode('utf-8')
             if ch in line:
                 line = line.split(',')[0].replace('\n','')
                 return line[1:len(line)-1]
@@ -27,8 +27,8 @@ def convert2PY(string):
 
     if (len(string)==0):
         return ''
-    if not (isinstance(string,unicode)):
-        string = string.decode('utf-8')
+    # if not (isinstance(string,unicode)):
+    #     string = string.decode('utf-8')
 
     py = ''
     for i in range(0,len(string)):
@@ -37,4 +37,4 @@ def convert2PY(string):
 
     return py
 
-print convert2PY('乐123aafdff')
+print(convert2PY('乐123aafdff'))

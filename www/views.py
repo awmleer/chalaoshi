@@ -1,7 +1,6 @@
 import json
 import time
-import urllib
-import urllib2
+import urllib.parse
 
 from django.http import *
 from django.shortcuts import render_to_response
@@ -146,7 +145,7 @@ def home(request):
     search_url = ''
     if len(keywords) > 0:
         for keyword in keywords:
-            search_url += 'q=%s&' % urllib.quote(keyword.encode('UTF-8'))
+            search_url += 'q=%s&' % urllib.parse.quote(keyword)
 
     request.session['college'] = college_id
 
