@@ -1,6 +1,6 @@
-#coding=utf-8
-
 from weilib.lib import create_menu,MButton,get_token
+
+
 def create_btns(hostname):
     btn_search = MButton(u'\U0001F50D查老师', key='SEARCH')
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#coding:utf-8
 #weilib/handlers.py - router handlers for weilib
 #ver 0.1 by winkidney 2014.05.10
 

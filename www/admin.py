@@ -1,4 +1,3 @@
-# coding:utf-8
 # in folder 'core'
 from django.contrib import admin
 from .models import *

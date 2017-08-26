@@ -1,20 +1,18 @@
-# coding:utf-8
 import json
-import time
-import urllib
+import urllib.parse
+import urllib.request
+from urllib.parse import ParseResult
 
-from django.http import *
-from django.shortcuts import  render_to_response
-from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django.http import *
+from django.shortcuts import render_to_response
+from django.views.decorators.csrf import csrf_exempt
 
-from weilib.router import base_router, db_router
-from weilib.lib import GetMsg, check_signature,generate_js_signature
 from weilib.handlers import default_handler
-
+from weilib.lib import GetMsg, generate_js_signature
+from weilib.router import base_router, db_router
+from .menu_custom import post_menu, create_btns
 from .router import router_patterns
-from .menu_custom import post_menu,create_btns
-from .models import *
 
 # router 必须是一个list实例
 routers = [db_router, base_router]
@@ -36,20 +34,17 @@ def test_ua(request):
 
 def wx_userinfo_mock_callback(request):
     code = request.POST.get('code', '')
-    if requet.method == 'GET' or not code:
+    if request.method == 'GET' or not code:
         return render_to_response('')
 
 def wx_userinfo_callback(request):
-    import urllib2
-    from django.utils.http import urlencode
     def url_add_params(url, **params):  
-        import urlparse
-        pr = urlparse.urlparse(url)
-        query = dict(urlparse.parse_qsl(pr.query))  
+        pr = urllib.parse.urlparse(url)
+        query = dict(urllib.parse.parse_qsl(pr.query))
         query.update(params)
         prlist = list(pr)
-        prlist[4] = urlencode(query)  
-        return urlparse.ParseResult(*prlist).geturl()
+        prlist[4] = urllib.parse.urlencode(query)
+        return ParseResult(prlist).geturl() #TODO
 
     redirect = request.session.get('redirect','/')
     code = request.GET.get('code','')
@@ -62,7 +57,7 @@ def wx_userinfo_callback(request):
         settings.WECHAT['SECRET'],
         code,
     ) 
-    response = urllib2.urlopen(url).read()
+    response = urllib.request.urlopen(url).read()
     dic = json.loads(response)
     
     error = dic.get('errcode',-1)

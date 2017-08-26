@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#coding:utf-8
 #weilib/plugin/acitvity.py - activity plugin for weilib
 #ver 0.1 by winkidney 2014.05.10
 from . import activity

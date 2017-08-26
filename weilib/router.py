@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding:utf-8
 # weilib/router.py - router handlers for weilib
 # include router function and router pattern response
 # ver 0.1 by winkidney 2014.05.10

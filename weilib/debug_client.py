@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#coding:utf-8
 #weidev.py - GUI development tools for weichat development
 #version 0.1 - by winkidney -2014-05-08
 """

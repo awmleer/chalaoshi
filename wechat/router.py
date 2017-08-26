@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding:utf-8
 # tuwei/router.py - message router to generate response message
 # ver 0.1 by winkidney 2014.05.10
 

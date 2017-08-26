@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#coding:utf-8
 #tuwei/tests.py - test file of the lib
 """
 This file demonstrates writing tests using the unittest module. These will pass

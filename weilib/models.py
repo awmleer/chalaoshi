@@ -1,4 +1,3 @@
-# coding:utf-8
 # weilib/models.py - database definition file of weilib
 # by kidney 2014.05.12
 from django.db import models

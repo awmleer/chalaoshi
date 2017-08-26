@@ -1,4 +1,3 @@
-# coding:utf-8
 # weilib/lib.py - contains libs of weichat message
 # and some tool function.
 # read xml text and return a xml object

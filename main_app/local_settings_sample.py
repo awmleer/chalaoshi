@@ -1,5 +1,3 @@
-#coding:utf-8
-
 import os
 env = os.environ
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))

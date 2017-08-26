@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-# coding:utf-8
 # tuwei/handlers.py - router handlers for tuwei
 # ver 0.1 by winkidney 2014.05.10
 import urllib
+from urllib import request
 import json
-import urllib2
 import socket
 
 from django.db.models import Q
@@ -33,7 +31,7 @@ def search_handler(recv_msg):
 
     def search_course():
         recv_content = recv_msg.content
-        result = urllib2.urlopen('http://zjustudy.chalaoshi.cn/_api/teacher/list?'+urllib.urlencode({
+        result = request.urlopen('http://zjustudy.chalaoshi.cn/_api/teacher/list?'+urllib.urlencode({
             'course_name':recv_content
         })).read()
 

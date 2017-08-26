@@ -1,4 +1,3 @@
-#coding:utf-8
 # weilib/sample_msg.py - contains current weichat msg example
 # and some other info. 
 msg_send_kefu = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN"
