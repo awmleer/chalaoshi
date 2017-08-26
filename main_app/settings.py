@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'f_ra_qu7hb5@0q84n%w()m^$&iej+ccwck=l8esu7z3-8*z3tr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['chalaoshi.cn', 'www.chalaoshi.cn', 'ecs.chalaoshi.cn','localhost']
 
@@ -36,8 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'raven.contrib.django.raven_compat',
-    'django-datadog',
+    # 'raven.contrib.django.raven_compat',
+    # 'django-datadog',
     'weilib',
     'main_app',
     'www',
@@ -51,7 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django-datadog.middleware.DatadogMiddleware',
+    # 'django-datadog.middleware.DatadogMiddleware',
 )
 #X_FRAME_OPTIONS = 'ALLOW-FROM http://www.zjustudy.com.cn'
 ROOT_URLCONF = 'main_app.urls'
@@ -68,7 +68,7 @@ DATABASES = {
         'HOST': '/tmp/mysql.sock',
         'NAME': 'cls',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'rootpassword',
         'PORT': '',
         'OPTIONS': {
             'charset':'utf8mb4', #add emoji support
