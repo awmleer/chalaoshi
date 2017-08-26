@@ -285,7 +285,7 @@ class WeiDev(QDialog):
             response = urllib2.urlopen(request, timeout=5)
             self.msg_response_area.setText(self.tr(response.read()))
         except:
-            QMessageBox.critical(self,u"错误",
+            QMessageBox.critical(self,"错误",
                              self.tr("url错误或url访问超时……\n404错误也会让你看到这个对话框:)"))
 def main():
 
